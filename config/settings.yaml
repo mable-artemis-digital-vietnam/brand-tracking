@@ -1,0 +1,23 @@
+# Global settings. Environment variables override where noted.
+db_path: data/brand_tracking.db        # override with BT_DB_PATH
+default_industry: luxury_hotels
+
+collection:
+  concurrency: 8                       # max in-flight API requests
+  max_retries: 6                       # retries on 429 / 5xx / timeouts
+  request_timeout_s: 120
+  max_output_tokens: 1500              # hard cap per answer (also caps cost)
+  reasoning_effort: low                # for reasoning models: minimal | low | medium | high
+  default_budget_usd: 5.00             # hard stop; override with --budget
+  seed: 42                             # used for --sample selection
+
+# Assumptions used by --dry-run estimates (tune after a real pilot run;
+# `bt.py metrics` prints observed averages you can paste back here).
+estimates:
+  avg_output_tokens: 1000              # visible + reasoning tokens
+  avg_web_search_input_tokens: 8000    # page content injected when web search is on
+
+detection:
+  extraction_model: gpt-5-nano
+  extraction_provider: openai
+  context_window_chars: 80             # for ambiguous-brand context checks without LLM

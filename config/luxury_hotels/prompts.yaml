@@ -1,0 +1,75 @@
+# Prompt library: templates × variables.
+#
+# - `segments` lists the tag keys every prompt carries (used for filtering in metrics/dashboard).
+#   Templates that don't use a segment variable get the value from `tag_defaults`.
+# - Variable values are either a plain string (tag value == text inserted) or
+#   {value: <tag value>, text: <text inserted into the template>}.
+# - `intent` and `language` are set per template and become tags too.
+# - `sample: N` keeps a seeded, balanced subset of that template's combinations (each
+#   variable value appears as evenly as possible; omit to keep all). Change `seed` to
+#   draw a different but reproducible subset.
+
+industry: luxury_hotels
+seed: 7
+
+segments: [destination, traveler_type, intent, budget_tier, language]
+
+tag_defaults:
+  destination: global
+  traveler_type: unspecified
+  budget_tier: unspecified
+
+variables:
+  destination:
+    - Bali
+    - Tokyo
+    - Bangkok
+    - {value: Hoi An, text: "Hoi An, Vietnam"}
+    - Paris
+    - {value: Maldives, text: "the Maldives"}
+    - Dubai
+    - New York
+  traveler_type:
+    - {value: honeymoon, text: a honeymoon}
+    - {value: family, text: a family trip with kids}
+    - {value: business, text: a business trip}
+    - {value: solo, text: a solo trip}
+  budget_tier:
+    - {value: ultra_luxury, text: ultra-luxury}
+    - {value: luxury, text: five-star}
+    - {value: upper_upscale, text: upscale but good-value}
+
+templates:
+  - id: rec_by_traveler
+    intent: recommendation
+    language: en
+    text: "What's the best luxury hotel in {destination} for {traveler_type}?"
+    sample: 12
+
+  - id: best_of_list
+    intent: best_of_list
+    language: en
+    text: "List the top 10 luxury hotels in {destination}."
+
+  - id: compare_brands_destination
+    intent: comparison
+    language: en
+    text: "I'm choosing between the big five-star hotel brands in {destination} for {traveler_type}. How do they compare, and which would you pick?"
+    sample: 10
+
+  - id: booking_advice
+    intent: booking_advice
+    language: en
+    text: "I'm looking for {budget_tier} hotels in {destination} for {traveler_type}. Which one should I book, and how do I get the best rate?"
+    sample: 10
+
+  - id: rec_by_budget
+    intent: recommendation
+    language: en
+    text: "What's the best {budget_tier} hotel in {destination} right now?"
+    sample: 6
+
+  - id: brand_best_of
+    intent: best_of_list
+    language: en
+    text: "Which luxury hotel brands are the best for {traveler_type}?"

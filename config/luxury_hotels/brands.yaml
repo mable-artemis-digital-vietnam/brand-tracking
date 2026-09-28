@@ -1,0 +1,188 @@
+# Brand dictionary for detection.
+#
+# Fields per brand:
+#   key            stable id (snake_case) — never rename once data exists
+#   name           canonical display name
+#   parent         parent company
+#   aliases        spellings to match. Matching is flexible about spaces/hyphens
+#                  ("Ritz-Carlton" also matches "Ritz Carlton", "RitzCarlton"), optional
+#                  trailing dots ("St." ~ "St") and curly/straight apostrophes.
+#                  Non-Latin aliases (Japanese/Chinese/Thai/Korean) match as substrings.
+#   properties     flagship property names that count as a mention of the brand
+#   case_sensitive true -> Latin aliases must match capitalisation exactly
+#                  (stops "four seasons of the year", "rosewood", "aman" = safe in Malay)
+#   exclude_patterns  case-insensitive regexes; a hit that overlaps one is discarded
+#   ambiguous      true -> every hit must be confirmed (by the LLM pass, or without LLM
+#                  by a hotel context word within `detection.context_window_chars`)
+#   context_words  extra words that confirm an ambiguous hit (added to the defaults below)
+
+industry: luxury_hotels
+
+default_context_words: [hotel, hotels, resort, resorts, suite, suites, villa, villas, stay, spa,
+  property, rooms, room, check-in, booking, book, night, nights, brand, butler, concierge, lobby,
+  pool, "five-star", "5-star", luxury]
+
+brands:
+  - key: four_seasons
+    name: Four Seasons
+    parent: Four Seasons Hotels and Resorts
+    case_sensitive: true
+    aliases: ["Four Seasons", "フォーシーズンズ", "โฟร์ซีซั่นส์", "四季酒店", "포시즌스"]
+    exclude_patterns:
+      - "four seasons of the year"
+      - "all four seasons"
+      - "four seasons (a|per|each) year"
+      - "four seasons in (a|one) day"
+      - "(through|throughout|across|during|in) (the |all )?four seasons(?! (hotel|resort|private|at|in|bali|tokyo|bangkok|paris|maldives|dubai|new york|sayan|jimbaran|george v|landaa|kuda))"
+      - "four distinct seasons"
+
+  - key: ritz_carlton
+    name: Ritz-Carlton
+    parent: Marriott International
+    # NB: "The Ritz London" / "Ritz Paris" are NOT Ritz-Carlton, so plain "Ritz" is not an alias.
+    aliases: ["Ritz-Carlton", "The Ritz-Carlton", "Ritz Carlton Reserve", "ザ・リッツ・カールトン", "リッツ・カールトン", "丽思卡尔顿", "리츠칼튼", "ริทซ์-คาร์ลตัน"]
+
+  - key: mandarin_oriental
+    name: Mandarin Oriental
+    parent: Mandarin Oriental Hotel Group
+    aliases: ["Mandarin Oriental", "マンダリン オリエンタル", "マンダリン・オリエンタル", "文华东方", "文華東方", "แมนดาริน โอเรียนเต็ล", "만다린 오리엔탈"]
+
+  - key: rosewood
+    name: Rosewood
+    parent: Rosewood Hotel Group
+    case_sensitive: true
+    aliases: ["Rosewood", "ローズウッド", "瑰丽", "瑰麗"]
+    properties: ["Hôtel de Crillon", "Hotel de Crillon", "The Carlyle"]
+    exclude_patterns:
+      - "rosewood (furniture|wood|timber|oil|table|tables|tree|trees|panel|panels|paneling|panelling|finish|floor|floors|flooring|cabinet|cabinetry|guitar|fretboard|veneer|desk|chair|chairs|bed|headboard|accents?|interiors?)\\b"
+      - "(carved|polished|dark|brazilian|indian|burmese|solid) rosewood"
+
+  - key: aman
+    name: Aman
+    parent: Aman Group
+    case_sensitive: true
+    ambiguous: true
+    aliases: ["Aman", "Aman Resorts", "アマン"]
+    properties: [Amanpuri, Amankila, Amandari, Amanjiwo, Amangiri, Amanyara, Amanemu, Amansara, Amanoi,
+      Amanzoe, Amanjena, Amangani, Amantaka, Amanwella, Amanbagh, Amanyangyun, Amanfayun, Amanera]
+    context_words: [Tokyo, Kyoto, Venice, "New York", Nai Lang, Bali, Phuket, Amanpuri]
+    exclude_patterns:
+      # Malay/Indonesian "aman" = safe; Hindi/Urdu "aman" = peace; common given name
+      - "\\baman (dan|untuk|bagi|sekali|ke|di|dari|lah|aur|hai|ki|ka|ke)\\b"
+      - "\\b(tempat|sangat|lebih|tidak|yang|cukup|paling|rasa|keadaan|selamat|amn[o-]*|aur) aman\\b"
+      - "\\baman (singh|gupta|sharma|kumar|khan|verma)\\b"
+
+  - key: st_regis
+    name: St. Regis
+    parent: Marriott International
+    aliases: ["St. Regis", "Saint Regis", "セントレジス", "瑞吉", "세인트 레지스", "เซนต์ รีจิส"]
+
+  - key: six_senses
+    name: Six Senses
+    parent: IHG Hotels & Resorts
+    case_sensitive: true
+    aliases: ["Six Senses", "シックスセンシズ", "六善"]
+    exclude_patterns:
+      - "(engage|engages|engaging|awaken|awakens|stimulate|stimulates|delight|delights|all|your|our|his|her|their|five or|five|the human) (the )?six senses(?! (hotel|resort|spa|residences|zil|yao|ninh|con dao|uluwatu|kyoto|laamu|zighy|douro|ibiza|rome|paris|new york))"
+      - "six senses (of|are|is a)"
+
+  - key: shangri_la
+    name: Shangri-La
+    parent: Shangri-La Group
+    ambiguous: true
+    aliases: ["Shangri-La", "香格里拉", "シャングリ・ラ", "샹그릴라", "แชงกรี-ลา"]
+    exclude_patterns:
+      - "shangri-la (for|of) "
+      - "(a|an|like|real|true|veritable|modern|culinary|little|hidden|tropical|personal|own|foodie's|foodies'|gourmet) shangri-la(?! (hotel|resort|at|the))"
+      - "shangri-la,? (city|county|yunnan|prefecture|gorge)"
+      - "lost horizon"
+
+  - key: peninsula
+    name: The Peninsula
+    parent: Hongkong and Shanghai Hotels
+    case_sensitive: true
+    ambiguous: true
+    aliases: ["The Peninsula", "Peninsula Hotels", "Peninsula Hotel", "Peninsula Tokyo", "Peninsula Bangkok",
+      "Peninsula Paris", "Peninsula Hong Kong", "Peninsula New York", "Peninsula Beverly Hills",
+      "Peninsula Shanghai", "Peninsula Beijing", "Peninsula Istanbul", "Peninsula London",
+      "ザ・ペニンシュラ", "半島酒店", "半岛酒店", "เดอะ เพนนินซูลา"]
+    exclude_patterns:
+      - "(malay|arabian|iberian|korean|italian|balkan|crimean|arabic|scandinavian|kowloon|yucatan|yucatán|baja|sinai|antarctic|olympic|upper|lower|mornington|nusa dua|bukit|papagayo|cape|monterey|kenai|delmarva|san francisco|sorrento|shandong|liaodong|la) peninsula"
+      - "the peninsula('s)? (region|coast|coastline|tip|area|itself|is home|is known|was|has)"
+
+  - key: fairmont
+    name: Fairmont
+    parent: Accor
+    case_sensitive: true
+    aliases: ["Fairmont", "フェアモント", "费尔蒙", "แฟร์มอนท์"]
+    exclude_patterns:
+      - "fairmont,? (wv|w\\. ?va|west virginia|minnesota|mn|california|ca|nc|north carolina|state|senior high|high school)"
+
+  - key: park_hyatt
+    name: Park Hyatt
+    parent: Hyatt
+    aliases: ["Park Hyatt", "パーク ハイアット", "パークハイアット", "柏悦", "파크 하얏트", "พาร์ค ไฮแอท"]
+
+  - key: waldorf_astoria
+    name: Waldorf Astoria
+    parent: Hilton
+    aliases: ["Waldorf Astoria", "The Waldorf", "ウォルドーフ・アストリア", "华尔道夫", "월도프 아스토리아"]
+    exclude_patterns:
+      - "waldorf (salad|school|schools|education|kindergarten)"
+
+  - key: bulgari
+    name: Bulgari Hotels
+    parent: Marriott International
+    ambiguous: true
+    aliases: ["Bulgari Hotel", "Bulgari Hotels", "Bulgari Resort", "Bvlgari Hotel", "Bvlgari Resort", "Bulgari", "Bvlgari", "ブルガリ ホテル", "宝格丽酒店"]
+    exclude_patterns:
+      - "(bulgari|bvlgari) (jewel|jewels|jewelry|jewellery|watch|watches|bag|bags|boutique|store|fragrance|perfume|necklace|ring|serpenti)"
+
+  - key: belmond
+    name: Belmond
+    parent: LVMH
+    aliases: ["Belmond", "ベルモンド"]
+    properties: ["Hotel Cipriani", "Copacabana Palace", "Venice Simplon-Orient-Express", "Eastern & Oriental Express", "Hotel Caruso", "Splendido"]
+
+  - key: raffles
+    name: Raffles
+    parent: Accor
+    case_sensitive: true
+    ambiguous: true
+    aliases: ["Raffles", "Raffles Hotel", "ラッフルズ", "莱佛士", "莱佛士酒店"]
+    exclude_patterns:
+      - "raffles (place|city|institution|road|boulevard|avenue|quay|link|mrt|medical|hospital|lighthouse|marina)"
+      - "(stamford|sir thomas|sir stamford|thomas stamford) raffles"
+
+  - key: one_and_only
+    name: One&Only
+    parent: Kerzner International
+    aliases: ["One&Only", "One & Only", "ワンアンドオンリー"]
+
+  - key: capella
+    name: Capella
+    parent: Capella Hotel Group
+    case_sensitive: true
+    ambiguous: true
+    aliases: ["Capella", "カペラ", "嘉佩乐"]
+    exclude_patterns:
+      - "capella (university|space|star|constellation|education)"
+      - "(star|the star|bright) capella"
+
+  - key: oetker_collection
+    name: Oetker Collection
+    parent: Oetker Group
+    aliases: ["Oetker Collection", "Oetker Hotel"]
+    properties: ["Le Bristol Paris", "Hôtel du Cap-Eden-Roc", "Hotel du Cap-Eden-Roc", "Brenners Park-Hotel",
+      "The Lanesborough", "Jumby Bay", "Château Saint-Martin", "Palácio Tangará", "Eden Rock St Barths"]
+
+  - key: anantara
+    name: Anantara
+    parent: Minor Hotels
+    aliases: ["Anantara", "อนันตรา", "アナンタラ", "安纳塔拉"]
+
+  - key: banyan_tree
+    name: Banyan Tree
+    parent: Banyan Group
+    case_sensitive: true
+    aliases: ["Banyan Tree", "バンヤンツリー", "悦榕庄", "บันยันทรี", "반얀트리"]
